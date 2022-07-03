@@ -29,7 +29,7 @@ def start(message):
     item4 = types.KeyboardButton('Weather🌤')
 
     markup.add(item1, item2, item3, item4)
-    bot.send_message(message.chat.id, f"Hello, <b>{message.from_user.first_name}</b>\n\nList of my functions:\n"
+    bot.send_message(message.chat.id, f"Hello, <b>{message.from_user.first_name}</b> \U0001F44B\n\nList of my functions:\n"
                                       f"/start\n/link\n\nI can help you with some your quetions\n"
                                       f"Maybe you want to see the weather in your city or the current exchange rate?", parse_mode='html', reply_markup=markup)
 
@@ -137,7 +137,7 @@ def handle_sticker(message):
 
 @bot.message_handler(content_types=['sticker'])
 def handle_sticker(message):
-    bot.send_sticker(message.chat.id, message.audio)
+    bot.send_sticker(message.chat.id, message.sticker.file_id)
 
 def get_print_weather(city):
     codes_to_emoji = {
