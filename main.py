@@ -1,3 +1,5 @@
+# My bot
+# https://t.me/Weather_Exchange_API_Bot
 import telebot
 from telebot import types
 import random
@@ -11,7 +13,6 @@ exchange_entry = False
 
 bot = telebot.TeleBot('yourTelegramBotAPI')
 open_weather_token = 'yourOpenWeatherAPI'
-
 
 @bot.message_handler(commands=['start'])
 def start(message):
@@ -28,9 +29,17 @@ def start(message):
     item4 = types.KeyboardButton('Weather🌤')
 
     markup.add(item1, item2, item3, item4)
-    bot.send_message(message.chat.id, f"Привіт, <b>{message.from_user.first_name}</b>\n\nList of my functions:\n"
-                                      f"/start\n\nI can help you with some your quetions\n"
-                                      f"Maybe you want you want to see the weather in your city or the current exchange rate?", parse_mode='html', reply_markup=markup)
+    bot.send_message(message.chat.id, f"Hello, <b>{message.from_user.first_name}</b>\n\nList of my functions:\n"
+                                      f"/start\n/link\n\nI can help you with some your quetions\n"
+                                      f"Maybe you want to see the weather in your city or the current exchange rate?", parse_mode='html', reply_markup=markup)
+
+
+@bot.message_handler(commands=['link'])
+def getlink(message):
+    markup = types.InlineKeyboardMarkup()
+    markup.add(types.InlineKeyboardButton('Link', url='https://github.com/NeShkApp'))
+    bot.send_message(message.chat.id, "My github link: ", reply_markup=markup)
+
 
 @bot.message_handler(content_types=['text'])
 def bot_message(message):
@@ -97,7 +106,7 @@ def bot_message(message):
             else:
                 # print(message.text)
                 weatherStr = get_print_weather(message.text)
-                bot.send_message(message.chat.id, weatherStr)
+                bot.send_message(message.chat.id, weatherStr, parse_mode='html')
 
         elif exchange_entry:
             if message.text == 'Back⬅':
@@ -114,14 +123,21 @@ def bot_message(message):
             bot.send_message(message.chat.id, "I don't understand you")
 
 
-
 @bot.message_handler(content_types=['photo'])
 def get_user_photo(message):
-    bot.send_message(message.chat.id, "Have a nice photo!", parse_mode='html')
+    bot.reply_to(message, "Have a nice photo!")
+
+@bot.message_handler(content_types=['document'])
+def get_user_photo(message):
+    bot.reply_to(message, "It's a document!")
+
+@bot.message_handler(content_types=['audio'])
+def handle_sticker(message):
+    bot.reply_to(message, "It's my favourite music!")
 
 @bot.message_handler(content_types=['sticker'])
 def handle_sticker(message):
-    bot.send_sticker(message.chat.id, message.sticker.file_id)
+    bot.send_sticker(message.chat.id, message.audio)
 
 def get_print_weather(city):
     codes_to_emoji = {
@@ -156,8 +172,15 @@ def get_print_weather(city):
         sunsett = datetime.datetime.fromtimestamp(data['sys']['sunset'])
 
         return(
-            f'Date: {datetime.datetime.now().strftime("%Y-%m-%d %H:%M")}\nCity: {city}\nFeels like: {feels} °C\nTemperature: {temp} °C\n{wd}\nHumidity: {humidity} %\nWind speed: {wind} m/s\n'
-            f'Sunrise time: {sunriset}\nSunset time: {sunsett}\nHave a good day❤')
+            f'<b>Date:</b> {datetime.datetime.now().strftime("%Y-%m-%d %H:%M")}\n'
+            f'<b>City:</b> {city}\n'
+            f'<b>Feels like:</b> {feels} °C\n'
+            f'<b>Temperature:</b> {temp} °C\n{wd}\n'
+            f'<b>Humidity:</b> {humidity} %\n'
+            f'<b>Wind speed:</b> {wind} m/s\n'
+            f'<b>Sunrise time:</b> {sunriset}\n'
+            f'<b>Sunset time:</b> {sunsett}\n'
+            f'Have a good day❤')
 
     except Exception as ex:
         print(ex)
